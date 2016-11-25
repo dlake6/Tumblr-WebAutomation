@@ -5,7 +5,6 @@ require "rspec"
 image = "http://bit.ly/2fuDA5Q"
 BLOG = "https://www.tumblr.com/blog/sdet-hero"
 
-
 def logged_in?
   @browser.body.class_name.include? "logged_in"
 end
@@ -19,7 +18,6 @@ def login
   @browser.text_field(id: "login-passwd").send_keys "Acad3my1\n"
   Watir::Wait.until { @browser.body(id: 'dashboard_index').exists? }
 end
-
 
 def logout
   @browser.goto "#{@url}/logout"
@@ -57,10 +55,6 @@ def find_post
     end
   end
 end
-
-
-
-
 
 RSpec.configure do |config|
   config.filter_run :focus => true
