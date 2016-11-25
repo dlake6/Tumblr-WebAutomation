@@ -2,6 +2,8 @@ require "watir"
 require "rspec"
 
 #@user_name = 'sdet-hero'
+image = "http://bit.ly/2fuDA5Q"
+BLOG = "https://www.tumblr.com/blog/sdet-hero"
 
 
 def logged_in?
@@ -15,7 +17,9 @@ def login
   @browser.button(id: "login-signin").click
   sleep 1
   @browser.text_field(id: "login-passwd").send_keys "Acad3my1\n"
-end 
+  Watir::Wait.until { @browser.body(id: 'dashboard_index').exists? }
+end
+
 
 def logout
   @browser.goto "#{@url}/logout"
@@ -28,14 +32,13 @@ def make_post
   @browser.div(class: "editor-plaintext").send_keys "Test"
   @browser.div(class: "editor-richtext").send_keys "this is a test"
   @browser.button(class: "button-area create_post_button").click
-  sleep 1
+  sleep 2
   @browser.goto "https://www.tumblr.com/blog/sdet-hero"
-  sleep 1
+  sleep 2
   return @browser.lis(class: "post_container")[1].attribute_value("data-pageable")
 end
 
 def delete_post
-  sleep 1
   @browser.goto "https://www.tumblr.com/blog/sdet-hero"
   Watir::Wait.until { @browser.lis(class: "post_container")[0].present? }
   @browser.ol(id: 'posts').lis[1].div(class: 'creator').click
@@ -46,15 +49,21 @@ def delete_post
 end
 
 def find_post
-  if @id == @browser.lis(class: "post_container")[1].attribute_value("data-pageable")
-    return true
-  else
-    return false
+  @browser.lis(class: "post_container").each do |check|
+    if check.attribute_value('data-pageable') == @id
+      return true
+    else
+      return false
+    end
   end
 end
 
-RSpec.configure do |c|
-  c.filter_run :focus => true
+
+
+
+
+RSpec.configure do |config|
+  config.filter_run :focus => true
 end
 
 RSpec.configure do |config|

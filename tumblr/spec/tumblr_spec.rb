@@ -30,14 +30,10 @@ describe "Tumblr", :focus do
     5.times { @browser.input(id: 'signup_determine_email').send_keys :backspace }
   end
 
-
-
-  it 'should fail to log in with invalid password' do
+	it 'should fail to log in with invalid password' do
     logout
     expect(@browser.url).to eq "#{@url}/login"
-
-   
-  	@browser.text_field(id:"signup_determine_email").send_keys "dlake@spartaglobal.co\n"
+		@browser.text_field(id:"signup_determine_email").send_keys "dlake@spartaglobal.co\n"
   	sleep 2
 
   	@browser.button(id: "login-signin").click
@@ -48,22 +44,30 @@ describe "Tumblr", :focus do
     expect(@browser.div(id: 'mbr-login-error').text).to eq 'Invalid password. Please try again.'
   end
 
-	
-
-	it "should be able to make a new post" do
-		make_post
-		sleep 2
-		@browser.goto "https://www.tumblr.com/blog/sdet-hero"
+	it "should be able to make a new post and delete" do
+		@id = make_post
 		sleep 1
 		expect((@browser.divs(class: "post_title")[0]).text).to include "Test"
 		expect((@browser.divs(class: "post_body")[0]).text).to include "this is a test"
-	end
-
-	it 'should delete posts' do
-		@id = make_post
+		sleep 1
 		delete_post
 		sleep 1
 		expect(find_post).to eq false
+	end
+
+	it "should be able to post images" do
+		@browser.i(class: "icon_post_photo").click
+		sleep 1
+		@browser.div(class: 'dropzone-add-url-icon').click
+		sleep 1
+		@browser.div(class: 'editor-plaintext').send_keys "http://bit.ly/2aI3Nw4\n"
+		sleep 3
+		@browser.button(class: 'create_post_button').click
+		sleep 3
+		@browser.goto BLOG
+		sleep 1
+		expect(@browser.lis(class: "post_container")[1].exists?).to eq true
+		delete_post
 	end
 
 end
