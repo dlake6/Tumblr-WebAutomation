@@ -1,6 +1,6 @@
 require 'watir'
 
-describe "Tumblr" do 
+describe "Tumblr", :focus do 
 
 	before(:all) do
 		@browser = Watir::Browser.new :chrome
@@ -13,7 +13,7 @@ describe "Tumblr" do
 		else
 			login
 		end
-	endls
+	end
 	
 
 	it 'should login in with valid credentials' do
@@ -51,7 +51,8 @@ describe "Tumblr" do
   	@browser.div(class: "editor-plaintext").send_keys "Test"
   	@browser.div(class: "editor-richtext").send_keys "this is a test"
   	@browser.button(class: "button-area create_post_button").click
-		sleep 2 #only works with sleep or redirection to quick
+  	#wait before redirection to blog
+		Watir::Wait.until { @browser.url.include? "dashboard" } 
 		#check post is now visible on blog
 		@browser.goto BLOG
 		Watir::Wait.until { @browser.ol(id: 'posts').exists? }
@@ -80,10 +81,13 @@ describe "Tumblr" do
 		@browser.div(class: 'editor-plaintext').send_keys IMAGE
 		Watir::Wait.until { @browser.button(class: 'create_post_button').enabled? }
 		@browser.button(class: 'create_post_button').click
-		sleep 2
+		#wait before redirection to blog
+		Watir::Wait.until { @browser.url.include? "dashboard" }
+		#check image is now visible on blog
 		@browser.goto BLOG
 		Watir::Wait.until { @browser.ol(id: 'posts').exists? }
 		expect(@browser.lis(class: "post_container")[1].exists?).to eq true
+		#Teardown - will be an api delete
 		delete_post
 	end
 
